@@ -1,0 +1,41 @@
+# トピック別サブレディット定義
+# score_threshold: そのサブで取り上げる最低スコア（upvote - downvote）
+# 多いサブは閾値を上げる、少ないサブは下げる調整を後でやる
+
+default_score_threshold: 5
+
+topics:
+  - name: "モデル探し＋撮影運用"
+    subreddits:
+      - MODELING
+      - ClothingStartups
+      - streetwearstartup
+      - femalefashionadvice
+      - photography
+      - AskPhotography
+      - videography
+      - Instagram
+
+  - name: "インフルエンサー連携＋報酬・使用権"
+    subreddits:
+      - influencermarketing
+      - smallbusiness
+      - Entrepreneur
+      - ecommerce
+      - UGCcreators
+      - UGCForBrands
+
+  - name: "型破りな集客＋第一印象・返信率の研究"
+    subreddits:
+      - GrowthHacking
+      - SwipeHelper
+      - Tinder
+      - Bumble
+      - OnlineDating
+      - copywriting
+      - sales
+
+# サブごとに閾値を上書きしたい場合
+score_threshold_overrides:
+  # Entrepreneur: 15
+  # smallbusiness: 10

@@ -1,0 +1,3 @@
+.claude/
+*.log
+__pycache__/

@@ -1,0 +1,13 @@
+# 除外ワード（タイトル・本文に含まれる場合、その投稿はスキップ）
+# 大文字小文字は区別しない
+exclude_words:
+  - "3D print"
+  - "resin print"
+  - "miniature"
+  - "warhammer"
+  - "cosplay armor"
+  - "anime figure"
+  - "onlyfans"
+  - "NSFW"
+  - "crypto"
+  - "NFT"
