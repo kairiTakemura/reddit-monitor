@@ -84,7 +84,12 @@ curl -A "..." "https://www.reddit.com/comments/{id}.json?limit=20&sort=top"
 - `./tmp/` を削除
 - `git add reports/ state/`
 - `git commit -m "daily digest YYYY-MM-DD"`
-- `git push`（リモートが設定されていれば）
+- push 用に remote URL にトークンを埋める（`$GITHUB_TOKEN` 環境変数を使用）：
+  ```
+  git -c user.name="cowork-bot" -c user.email="cowork@local" \
+      push "https://x-access-token:${GITHUB_TOKEN}@github.com/kairiTakemura/reddit-monitor.git" HEAD:master
+  ```
+  `GITHUB_TOKEN` が未設定の場合は push をスキップしてログに「push skipped: no GITHUB_TOKEN」と記録。
 
 ## 厳守事項
 
