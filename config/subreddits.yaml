@@ -1,11 +1,28 @@
 # トピック別サブレディット定義
-# score_threshold: そのサブで取り上げる最低スコア（upvote - downvote）
-# 多いサブは閾値を上げる、少ないサブは下げる調整を後でやる
+# LLM がトピックの趣旨に沿うかを意味で判定する
+# スコアは「最低限のノイズ除去（score < 3 は弾く）」用の保険。中心は意味判定
 
-default_score_threshold: 5
+minimum_score: 3       # スコア未満の投稿は意味判定にすら回さない
+top_n_per_topic: 5     # 各トピックで深掘り（コメント取得）する上位件数
 
 topics:
   - name: "モデル探し＋撮影運用"
+    intent: |
+      モデル/被写体を探す方法、撮影のテクニックや実務ノウハウ。
+      具体的には: TFPの作法、モデルリリースや使用権、低予算/スマホ撮影、
+      ライティング、ポージング指示、商品撮影、flat lay、リール動画、
+      ストリートキャスティング、エージェンシー選び、ポートフォリオ構築の方法論。
+    relevant_examples:
+      - "How do small brands find models on a budget?"
+      - "Tips for shooting product photos with a smartphone"
+      - "TFP shoot etiquette and what to include in the model release"
+      - "What lighting setup works for indoor lookbook?"
+    not_relevant_examples:
+      - 特定個人モデルの「私の写真どう？」フィードバック相談
+      - 特定個人モデルのコンプカード/ポラ写真の評価依頼
+      - ブランドの新作ドロップお披露目
+      - 業界愚痴・カメラ機材の故障話・難クライアント愚痴
+      - 「面接で何を着る？」のような一般ファッション相談
     subreddits:
       - MODELING
       - ClothingStartups
@@ -17,6 +34,22 @@ topics:
       - Instagram
 
   - name: "インフルエンサー連携＋報酬・使用権"
+    intent: |
+      インフルエンサー/UGCクリエイターを使ったプロモーションの実務。
+      具体的には: アウトリーチ方法、報酬設計（ギフティング/アフィリエイト/現金）、
+      コンテンツ使用権・ライセンス、契約条項、ホワイトリスト/スパークアド、
+      マイクロインフルエンサーの選定基準、ROI計測、プロダクトシーディング戦略。
+    relevant_examples:
+      - "What's a fair rate for micro influencers in fashion?"
+      - "How do you negotiate content licensing rights with UGC creators?"
+      - "Gifting vs paid - which produces better content for small brands?"
+      - "Template for influencer contract that protects whitelisting rights"
+    not_relevant_examples:
+      - 創業者の体験談（売上達成・退職決断・燃え尽き相談）
+      - 起業全般のニッチ探し・アイデア検証
+      - AI自動化全般の事例紹介
+      - EC・物流・在庫・テックスタックの相談
+      - UGCクリエイター側の単なるモチベ投稿（「90日で稼げた！」など）
     subreddits:
       - influencermarketing
       - smallbusiness
@@ -26,6 +59,23 @@ topics:
       - UGCForBrands
 
   - name: "型破りな集客＋第一印象・返信率の研究"
+    intent: |
+      「人の関心・反応を引き出す技術」全般のノウハウ。
+      具体的には: プロフィール最適化、第一印象、写真選定、初回メッセージ/DM、
+      返信率改善、コールドアウトリーチ、ゲリラマーケティング、
+      コピーライティングのフック、件名最適化、コンバージョン改善、
+      非常識/低予算のグロースハック手法。
+    relevant_examples:
+      - "First message templates that actually get replies"
+      - "How profile photo selection affects match rate (data)"
+      - "Subject line rewrite that doubled open rate"
+      - "Guerrilla marketing tactics that worked for tiny brands"
+    not_relevant_examples:
+      - Tinder/Bumble の面白会話スクショ・ネタ投稿
+      - 個人の恋愛相談・愚痴・「私の彼やばい？」系
+      - 営業職の転職相談・職場の愚痴
+      - BAN された/契約打ち切りの不満投稿
+      - 雑談スレ・Daily Questions Thread 等の定常スレ
     subreddits:
       - GrowthHacking
       - SwipeHelper
@@ -34,8 +84,3 @@ topics:
       - OnlineDating
       - copywriting
       - sales
-
-# サブごとに閾値を上書きしたい場合
-score_threshold_overrides:
-  # Entrepreneur: 15
-  # smallbusiness: 10
