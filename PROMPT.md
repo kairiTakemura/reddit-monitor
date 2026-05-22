@@ -13,23 +13,24 @@
 ### 1. 設定とステートを読み込む
 - `config/subreddits.yaml` — トピック定義（`intent`, `relevant_examples`, `not_relevant_examples`, `subreddits`）、`minimum_score`, `top_n_per_topic`
 - `config/exclude_words.yaml` — 除外ワード
-- `state/last_seen.json` — `{"<sub>": "<post_id>"}` 形式。初回は空 `{}`
+- `state/already_reported.json` — `{"reported_ids": ["<post_id>", ...]}` 形式。過去にレポートへ載せた投稿IDの集合。初回は `{"reported_ids": []}`
 
-### 2. 全サブの新着 JSON を取得（並列）
+### 2. 全サブの週間トップ JSON を取得（並列）
 全サブについて以下を **並列で** curl（21本で2秒程度）：
 ```
-https://www.reddit.com/r/{sub}/new.json?limit=25
+https://www.reddit.com/r/{sub}/top.json?t=week&limit=25
 ```
 一時ディレクトリ（例：`./tmp/`）に `{sub}.json` として保存。
+※ `new`（最新）ではなく `top?t=week`（直近1週間の高評価スレ）を使う。議論が成熟したスレを対象にするため。
 
 ### 3. 機械的な一次フィルタ
 各 JSON の `data.children[].data` から以下を取り出す：
 `id`, `title`, `selftext`, `permalink`, `score`, `num_comments`, `created_utc`, `subreddit`
 
 各投稿を以下の順で除外：
-1. **last_seen**：`state/last_seen.json[sub]` より新しい投稿のみ残す（初回は全件新着扱い）
+1. **重複排除**：`already_reported.json` の `reported_ids` に含まれる post ID は除外（過去に紹介済み）
 2. **除外ワード**：`exclude_words.yaml` の語句がタイトル/本文（大文字小文字無視）にヒットしたら除外
-3. **最低スコア**：`score < minimum_score`（既定3）は除外
+3. **最低スコア**：`score < minimum_score`（既定10）は除外
 4. 各投稿を所属トピックに紐付ける（`subreddits.yaml` の topics から逆引き）
 
 ここまでで残った投稿の集合を「**候補集合**」と呼ぶ。
@@ -89,8 +90,8 @@ curl -A "..." "https://www.reddit.com/comments/{id}.json?limit=20&sort=top"
 ---
 ## 収集統計
 - 取得サブ数: 21
-- RSS新着総数: {N}
-- 一次フィルタで除外（重複/除外ワード/最低スコア未満）: {N}
+- 週間トップ取得総数: {N}
+- 一次フィルタで除外（紹介済み/除外ワード/最低スコア未満）: {N}
 - 意味判定で「非関連」と判定: {N}
 - 意味判定で「関連」と判定: {N}（うち深掘り {N} 件）
 - エラー: {N}（あれば内訳）
@@ -98,8 +99,10 @@ curl -A "..." "https://www.reddit.com/comments/{id}.json?limit=20&sort=top"
 ```
 
 ### 7. ステート更新と commit
-- 各サブについて、今回処理した投稿のうち**最も新しい post ID**（`created_utc` 最大）で `state/last_seen.json` を更新
-  - **意味判定の結果に関わらず**「取得した投稿」全体の最新を記録（次回同じ投稿を再評価しないため）
+- `state/already_reported.json` の `reported_ids` に、**今回レポートに載せた全投稿のID**を追加
+  - 深掘りした投稿、「関連だが深掘り省略」リストに載せた投稿の両方
+  - 非関連と判定した投稿は追加しない（次回もし高評価が伸びたら再評価される）
+  - リストが 2000 件を超えたら古いものから削って 2000 件に保つ
 - `./tmp/` を削除
 - `git add reports/ state/`
 - `git commit -m "daily digest YYYY-MM-DD"`
